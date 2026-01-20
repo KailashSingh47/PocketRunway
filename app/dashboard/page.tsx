@@ -38,6 +38,21 @@ export default function Dashboard() {
     setLoading(false);
   };
 
+  const clearAllExpenses = async () => {
+    if (!user) return;
+    
+    const { error } = await supabase
+      .from("expenses")
+      .delete()
+      .eq('user_id', user.id);
+
+    if (!error) {
+      setExpenses([]);
+    } else {
+      console.error("Error clearing expenses:", error);
+    }
+  };
+
   useEffect(() => {
     const checkUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -118,7 +133,10 @@ export default function Dashboard() {
           </div>
           
           <div className="lg:col-span-2 space-y-6 order-1 lg:order-2">
-            <ExpenseStats expenses={expenses} />
+            <ExpenseStats 
+              expenses={expenses} 
+              onClearAll={clearAllExpenses} 
+            />
             <ExpenseCharts expenses={expenses} />
             <div className="bg-vapor-dark/60 border-2 border-vapor-purple p-4 md:p-6 shadow-[5px_5px_0px_0px_rgba(185,103,255,0.5)]">
               <ExpenseList expenses={expenses} onExpenseDeleted={() => fetchExpenses(user.id)} />
