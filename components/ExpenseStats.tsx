@@ -5,15 +5,15 @@ import { Trash2 } from "lucide-react";
 
 type Expense = Tables<"expenses">;
 
-export const ExpenseStats = ({
-  expenses,
-  onClearAll
-}: {
-  expenses: Expense[],
-  onClearAll: () => void
+export const ExpenseStats = ({ 
+  expenses, 
+  onClearAll 
+}: { 
+  expenses: Expense[], 
+  onClearAll: () => void 
 }) => {
   const total = expenses.reduce((acc, curr) => acc + curr.amount, 0);
-
+  
   const categoryTotals = expenses.reduce((acc, curr) => {
     acc[curr.category] = (acc[curr.category] || 0) + curr.amount;
     return acc;
@@ -25,7 +25,7 @@ export const ExpenseStats = ({
         <div className="flex justify-between items-start">
           <h3 className="text-vapor-green font-bold mb-2 italic uppercase tracking-widest text-xs md:text-sm">Total Spent</h3>
           {expenses.length > 0 && (
-            <button
+            <button 
               onClick={() => {
                 if(confirm("Are you sure you want to clear all expenses? This cannot be undone.")) {
                   onClearAll();

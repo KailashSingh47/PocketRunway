@@ -2,151 +2,127 @@
 
 export const dynamic = "force-dynamic";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { Tables } from "@/database.types";
-import { ExpenseForm } from "@/components/ExpenseForm";
-import { ExpenseList } from "@/components/ExpenseList";
-import { ExpenseStats } from "@/components/ExpenseStats";
-import { ExpenseCharts } from "@/components/ExpenseCharts";
-import { ExpenseAlert } from "@/components/ExpenseAlert";
-import { QuickExpenses } from "@/components/QuickExpenses";
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
 import { VaporwaveBackground } from "@/components/VaporwaveBackground";
 import { ShuffleText } from "@/components/ShuffleText";
-import { Footer } from "@/components/Footer";
+import { LoadingScreen } from "@/components/LoadingScreen";
 import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 
-type Expense = Tables<"expenses">;
-
-export default function Dashboard() {
-  const [expenses, setExpenses] = useState<Expense[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<any>(null);
-  const supabase = createClient();
+export default function AuthPage() {
+  const [isLogin, setIsLogin] = useState(true);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const supabase = createClient();
 
-  const fetchExpenses = async (userId: string) => {
-    const { data, error } = await supabase
-      .from("expenses")
-      .select("*")
-      .eq('user_id', userId)
-      .order("date", { ascending: false });
+  const handleAuth = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
 
-    if (!error && data) {
-      setExpenses(data);
-    }
-    setLoading(false);
-  };
-
-  const clearAllExpenses = async () => {
-    if (!user) return;
-    
-    const { error } = await supabase
-      .from("expenses")
-      .delete()
-      .eq('user_id', user.id);
-
-    if (!error) {
-      setExpenses([]);
-    } else {
-      console.error("Error clearing expenses:", error);
-    }
-  };
-
-  useEffect(() => {
-    const checkUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        router.push("/auth");
+    try {
+      const origin = window.location.origin;
+      if (isLogin) {
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) throw error;
       } else {
-        setUser(user);
-        fetchExpenses(user.id);
+        const { error } = await supabase.auth.signUp({ 
+          email, 
+          password,
+          options: {
+            emailRedirectTo: `${origin}/auth/callback`,
+          }
+        });
+        if (error) throw error;
+        alert("Check your email for the confirmation link!");
+        setLoading(false);
+        return; // Don't redirect yet, wait for email confirmation
       }
-    };
-    checkUser();
-  }, []);
-
-  const downloadAllData = () => {
-    const doc = new jsPDF();
-    doc.setFontSize(20);
-    doc.setTextColor(255, 113, 206);
-    doc.text("PocketRunway - Full Expense History", 14, 22);
-    
-    const tableData = expenses.map(e => [
-      new Date(e.date).toLocaleDateString(),
-      e.category,
-      e.description || "-",
-      `Rs. ${e.amount.toLocaleString('en-IN')}`
-    ]);
-
-    autoTable(doc, {
-      startY: 30,
-      head: [['Date', 'Category', 'Description', 'Amount']],
-      body: tableData,
-      headStyles: { fillColor: [1, 205, 254] }, // Vapor Blue
-    });
-
-    doc.save("PocketRunway_Full_History.pdf");
+      router.push("/dashboard");
+    } catch (err: any) {
+      setError(err.message);
+      setLoading(false);
+    }
   };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-vapor-dark flex items-center justify-center">
-        <div className="text-vapor-pink text-2xl font-mono animate-pulse">
-          LOADING_SYSTEM...
-        </div>
-      </div>
-    );
-  }
 
   return (
-    <main className="min-h-screen text-white relative pb-20">
+    <main className="min-h-screen flex items-center justify-center p-6 relative overflow-hidden">
       <VaporwaveBackground />
       
-      <div className="container mx-auto px-6 pt-10 relative z-10">
-        <ExpenseAlert expenses={expenses} />
-        
-        <header className="flex justify-between items-end mb-12 border-b-2 border-vapor-pink pb-4">
-          <div>
-            <h1 className="text-4xl font-black italic text-vapor-pink">
-              <ShuffleText text="DASHBOARD" />
-            </h1>
-            <p className="text-vapor-blue font-mono text-xs uppercase tracking-widest mt-1">
-              User: {user?.email?.split('@')[0]} // Status: Aesthetic
-            </p>
-          </div>
-          <button 
-            onClick={async () => {
-              await supabase.auth.signOut();
-              router.push("/");
-            }}
-            className="text-xs border border-vapor-pink px-4 py-1 hover:bg-vapor-pink hover:text-vapor-dark transition-colors"
-          >
-            LOGOUT
-          </button>
-        </header>
+      <AnimatePresence>
+        {loading && <LoadingScreen message={isLogin ? "AUTHENTICATING" : "CREATING_ACCOUNT"} />}
+      </AnimatePresence>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-10">
-          <div className="lg:col-span-1 space-y-6 order-2 lg:order-1">
-            <QuickExpenses onExpenseAdded={() => fetchExpenses(user.id)} />
-            <ExpenseForm onExpenseAdded={() => fetchExpenses(user.id)} />
-          </div>
-          
-          <div className="lg:col-span-2 space-y-6 order-1 lg:order-2">
-            <ExpenseStats 
-              expenses={expenses} 
-              onClearAll={clearAllExpenses} 
-            />
-            <ExpenseCharts expenses={expenses} />
-            <div className="bg-vapor-dark/60 border-2 border-vapor-purple p-4 md:p-6 shadow-[5px_5px_0px_0px_rgba(185,103,255,0.5)]">
-              <ExpenseList expenses={expenses} onExpenseDeleted={() => fetchExpenses(user.id)} />
-            </div>
-          </div>
+      <motion.div 
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        className="w-full max-w-md bg-vapor-dark/80 border-4 border-vapor-pink p-8 relative z-10 shadow-[15px_15px_0px_0px_rgba(255,113,206,0.3)]"
+      >
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-black italic text-vapor-blue mb-2">
+            <ShuffleText text={isLogin ? "USER_LOGIN" : "NEW_USER"} />
+          </h1>
+          <div className="h-1 w-20 bg-vapor-green mx-auto" />
         </div>
 
-        <Footer />
+        <form onSubmit={handleAuth} className="space-y-6">
+          <div>
+            <label className="block text-xs text-vapor-pink uppercase mb-2 font-bold tracking-widest">Email Address</label>
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full bg-transparent border-2 border-vapor-blue p-3 text-white focus:outline-none focus:border-vapor-green transition-colors font-mono"
+              placeholder="user@vapor.wave"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs text-vapor-pink uppercase mb-2 font-bold tracking-widest">Password</label>
+            <input
+              type="password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full bg-transparent border-2 border-vapor-blue p-3 text-white focus:outline-none focus:border-vapor-green transition-colors font-mono"
+              placeholder="••••••••"
+            />
+          </div>
+
+          {error && (
+            <div className="text-vapor-pink text-xs font-mono bg-vapor-pink/10 p-2 border border-vapor-pink">
+              ERROR: {error.toUpperCase()}
+            </div>
+          )}
+
+          <button
+            type="submit"
+            className="w-full bg-vapor-blue text-vapor-dark font-black py-4 uppercase tracking-[0.2em] hover:bg-vapor-green hover:translate-x-1 hover:-translate-y-1 transition-all shadow-[4px_4px_0px_0px_#05ffa1]"
+          >
+            {isLogin ? "Enter System" : "Initialize Account"}
+          </button>
+        </form>
+
+        <div className="mt-8 text-center">
+          <button
+            onClick={() => setIsLogin(!isLogin)}
+            className="text-vapor-purple text-xs uppercase font-bold hover:text-vapor-pink transition-colors"
+          >
+            {isLogin ? ">> Create New Identity <<" : ">> Return to Login <<"}
+          </button>
+        </div>
+      </motion.div>
+
+      {/* Decorative Elements */}
+      <div className="absolute bottom-10 right-10 text-vapor-green/30 font-mono text-[10px] hidden md:block">
+        SECURE_CONNECTION_ESTABLISHED<br />
+        ENCRYPTION: AES-256-VAPOR<br />
+        STATUS: WAITING_FOR_INPUT
       </div>
     </main>
   );
