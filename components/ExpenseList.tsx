@@ -22,7 +22,7 @@ export const ExpenseList = ({ expenses, onExpenseDeleted }: { expenses: any[], o
             <tr className="border-b border-vapor-purple/30 text-vapor-pink text-[10px] md:text-xs uppercase">
               <th className="p-2 md:p-3">Date</th>
               <th className="p-2 md:p-3">Category</th>
-              <th className="p-2 md:p-3">Description</th>
+              <th className="p-2 md:p-3 hidden sm:table-cell">Description</th>
               <th className="p-2 md:p-3 text-right">Amount</th>
               <th className="p-2 md:p-3"></th>
             </tr>
@@ -30,14 +30,18 @@ export const ExpenseList = ({ expenses, onExpenseDeleted }: { expenses: any[], o
           <tbody>
             {expenses.map((expense) => (
               <tr key={expense.id} className="border-b border-vapor-purple/10 hover:bg-vapor-purple/5 transition-colors group">
-                <td className="p-2 md:p-3 text-xs md:text-sm font-mono">{new Date(expense.date).toLocaleDateString()}</td>
+                <td className="p-2 md:p-3 text-[10px] md:text-sm font-mono">{new Date(expense.date).toLocaleDateString()}</td>
                 <td className="p-2 md:p-3">
-                  <span className="px-1.5 py-0.5 text-[9px] md:text-[10px] border border-vapor-blue text-vapor-blue uppercase">
+                  <span className="px-1.5 py-0.5 text-[8px] md:text-[10px] border border-vapor-blue text-vapor-blue uppercase">
                     {expense.category}
                   </span>
                 </td>
-                <td className="p-2 md:p-3 text-xs md:text-sm text-gray-300 truncate max-w-[150px]">{expense.description}</td>
-                <td className="p-2 md:p-3 text-right font-bold text-vapor-green text-xs md:text-sm">₹{expense.amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+                <td className="p-2 md:p-3 text-xs md:text-sm text-gray-300 truncate max-w-[100px] md:max-w-[150px] hidden sm:table-cell">
+                  {expense.description}
+                </td>
+                <td className="p-2 md:p-3 text-right font-bold text-vapor-green text-xs md:text-sm">
+                  ₹{expense.amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                </td>
                 <td className="p-2 md:p-3 text-right">
                   <button 
                     onClick={() => deleteExpense(expense.id)}

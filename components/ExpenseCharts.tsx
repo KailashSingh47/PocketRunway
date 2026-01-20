@@ -53,50 +53,54 @@ export const ExpenseCharts = ({ expenses }: { expenses: Expense[] }) => {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
-      <div className="bg-vapor-dark/60 border-2 border-vapor-blue p-3 md:p-4 h-[250px] md:h-[300px]">
+      <div className="bg-vapor-dark/60 border-2 border-vapor-blue p-3 md:p-4 h-[280px] md:h-[320px]">
         <h3 className="text-vapor-blue text-[10px] md:text-xs font-bold uppercase mb-4 italic">Daily Spending (₹)</h3>
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={barData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#b967ff33" />
-            <XAxis dataKey="name" stroke="#01cdfe" fontSize={9} />
-            <YAxis stroke="#01cdfe" fontSize={9} />
-            <Tooltip 
-              formatter={(value: number) => [`₹${value.toLocaleString('en-IN')}`, 'Amount']}
-              contentStyle={{ backgroundColor: '#241734', border: '1px solid #ff71ce', color: '#fff', fontSize: '10px' }}
-              itemStyle={{ color: '#05ffa1' }}
-            />
-            <Bar dataKey="amount" fill="#ff71ce">
-              {barData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-              ))}
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
+        <div className="h-[200px] md:h-[240px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={barData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#b967ff33" />
+              <XAxis dataKey="name" stroke="#01cdfe" fontSize={9} />
+              <YAxis stroke="#01cdfe" fontSize={9} />
+              <Tooltip 
+                formatter={(value: number) => [`₹${value.toLocaleString('en-IN')}`, 'Amount']}
+                contentStyle={{ backgroundColor: '#241734', border: '1px solid #ff71ce', color: '#fff', fontSize: '10px' }}
+                itemStyle={{ color: '#05ffa1' }}
+              />
+              <Bar dataKey="amount" fill="#ff71ce">
+                {barData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
       </div>
 
-      <div className="bg-vapor-dark/60 border-2 border-vapor-pink p-3 md:p-4 h-[250px] md:h-[300px]">
+      <div className="bg-vapor-dark/60 border-2 border-vapor-pink p-3 md:p-4 h-[280px] md:h-[320px]">
         <h3 className="text-vapor-pink text-[10px] md:text-xs font-bold uppercase mb-4 italic">Category Distribution</h3>
-        <ResponsiveContainer width="100%" height="100%">
-          <PieChart>
-            <Pie
-              data={pieData}
-              cx="50%"
-              cy="50%"
-              innerRadius={50}
-              outerRadius={70}
-              paddingAngle={5}
-              dataKey="value"
-            >
-              {pieData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-              ))}
-            </Pie>
-            <Tooltip 
-              formatter={(value: number) => [`₹${value.toLocaleString('en-IN')}`, 'Total']}
-              contentStyle={{ backgroundColor: '#241734', border: '1px solid #ff71ce', color: '#fff', fontSize: '10px' }}
-            />
-          </PieChart>
-        </ResponsiveContainer>
+        <div className="h-[200px] md:h-[240px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie
+                data={pieData}
+                cx="50%"
+                cy="50%"
+                innerRadius={50}
+                outerRadius={70}
+                paddingAngle={5}
+                dataKey="value"
+              >
+                {pieData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Pie>
+              <Tooltip 
+                formatter={(value: number) => [`₹${value.toLocaleString('en-IN')}`, 'Total']}
+                contentStyle={{ backgroundColor: '#241734', border: '1px solid #ff71ce', color: '#fff', fontSize: '10px' }}
+              />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
       </div>
     </div>
   );
