@@ -2,8 +2,7 @@
 
 export const dynamic = "force-dynamic";
 
-import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { useEffect, useState } from "react";
 import { VaporwaveBackground } from "@/components/VaporwaveBackground";
 import { ShuffleText } from "@/components/ShuffleText";
 import { LoadingScreen } from "@/components/LoadingScreen";
@@ -17,7 +16,6 @@ export default function AuthPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
-  const supabase = createClient();
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,24 +23,34 @@ export default function AuthPage() {
     setError(null);
 
     try {
-      const origin = window.location.origin;
+      const users = JSON.parse(localStorage.getItem("pocket_users") || "[]");
+
       if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
+        const user = users.find((u: any) => u.email === email && u.password === password);
+        if (user) {
+          localStorage.setItem("pocket_user", JSON.stringify(user));
+          router.push("/dashboard");
+        } else {
+          throw new Error("Invalid email or password");
+        }
       } else {
-        const { error } = await supabase.auth.signUp({ 
-          email, 
-          password,
-          options: {
-            emailRedirectTo: `${origin}/auth/callback`,
-          }
-        });
-        if (error) throw error;
-        alert("Check your email for the confirmation link!");
-        setLoading(false);
-        return; // Don't redirect yet, wait for email confirmation
+        const existingUser = users.find((u: any) => u.email === email);
+        if (existingUser) {
+          throw new Error("User already exists");
+        }
+
+        const newUser = {
+          id: crypto.randomUUID(),
+          email,
+          password
+        };
+
+        users.push(newUser);
+        localStorage.setItem("pocket_users", JSON.stringify(users));
+        localStorage.setItem("pocket_user", JSON.stringify(newUser));
+        
+        router.push("/dashboard");
       }
-      router.push("/dashboard");
     } catch (err: any) {
       setError(err.message);
       setLoading(false);
@@ -121,7 +129,7 @@ export default function AuthPage() {
       {/* Decorative Elements */}
       <div className="absolute bottom-10 right-10 text-vapor-green/30 font-mono text-[10px] hidden md:block">
         SECURE_CONNECTION_ESTABLISHED<br />
-        ENCRYPTION: AES-256-VAPOR<br />
+        ENCRYPTION: LOCAL_STORAGE_V1<br />
         STATUS: WAITING_FOR_INPUT
       </div>
     </main>

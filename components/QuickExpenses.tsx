@@ -1,6 +1,5 @@
 "use client";
 
-import { createClient } from "@/lib/supabase/client";
 import { Coffee, Pizza, ShoppingBag, Bus, Zap } from "lucide-react";
 
 const QUICK_ITEMS = [
@@ -11,18 +10,22 @@ const QUICK_ITEMS = [
 ];
 
 export const QuickExpenses = ({ onExpenseAdded }: { onExpenseAdded: () => void }) => {
-  const supabase = createClient();
-
-  const addQuickExpense = async (item: typeof QUICK_ITEMS[0]) => {
-    const { data: { user } } = await supabase.auth.getUser();
+  const addQuickExpense = (item: typeof QUICK_ITEMS[0]) => {
+    const user = JSON.parse(localStorage.getItem("pocket_user") || "null");
     if (!user) return;
 
-    await supabase.from("expenses").insert({
+    const newExpense = {
+      id: Date.now().toString(),
       user_id: user.id,
       amount: item.amount,
       category: item.category,
       description: `Quick ${item.name}`,
-    });
+      date: new Date().toISOString(),
+    };
+
+    const allExpenses = JSON.parse(localStorage.getItem("pocket_expenses") || "[]");
+    allExpenses.push(newExpense);
+    localStorage.setItem("pocket_expenses", JSON.stringify(allExpenses));
 
     onExpenseAdded();
   };

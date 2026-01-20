@@ -1,9 +1,6 @@
 "use client";
 
-export const dynamic = "force-dynamic";
-
-import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { useState, useEffect } from "react";
 import { VaporwaveBackground } from "@/components/VaporwaveBackground";
 import { ShuffleText } from "@/components/ShuffleText";
 import { LoadingScreen } from "@/components/LoadingScreen";
@@ -17,35 +14,43 @@ export default function AuthPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
-  const supabase = createClient();
+
+  useEffect(() => {
+    const user = localStorage.getItem("pocket_user");
+    if (user) router.push("/dashboard");
+  }, [router]);
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
-    try {
-      const origin = window.location.origin;
-      if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
+    // Simulate network delay
+    await new Promise(resolve => setTimeout(resolve, 1500));
+
+    const users = JSON.parse(localStorage.getItem("pocket_users") || "[]");
+
+    if (isLogin) {
+      const user = users.find((u: any) => u.email === email && u.password === password);
+      if (user) {
+        localStorage.setItem("pocket_user", JSON.stringify(user));
+        router.push("/dashboard");
       } else {
-        const { error } = await supabase.auth.signUp({ 
-          email, 
-          password,
-          options: {
-            emailRedirectTo: `${origin}/auth/callback`,
-          }
-        });
-        if (error) throw error;
-        alert("Check your email for the confirmation link!");
+        setError("Invalid email or password");
         setLoading(false);
-        return; // Don't redirect yet, wait for email confirmation
       }
-      router.push("/dashboard");
-    } catch (err: any) {
-      setError(err.message);
-      setLoading(false);
+    } else {
+      const exists = users.find((u: any) => u.email === email);
+      if (exists) {
+        setError("User already exists");
+        setLoading(false);
+      } else {
+        const newUser = { id: Date.now().toString(), email, password };
+        users.push(newUser);
+        localStorage.setItem("pocket_users", JSON.stringify(users));
+        localStorage.setItem("pocket_user", JSON.stringify(newUser));
+        router.push("/dashboard");
+      }
     }
   };
 

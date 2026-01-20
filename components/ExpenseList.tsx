@@ -1,17 +1,13 @@
 "use client";
 
-import { Tables } from "@/database.types";
 import { Trash2 } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
 
-type Expense = Tables<"expenses">;
-
-export const ExpenseList = ({ expenses, onExpenseDeleted }: { expenses: Expense[], onExpenseDeleted: () => void }) => {
-  const supabase = createClient();
-
-  const deleteExpense = async (id: string) => {
-    const { error } = await supabase.from("expenses").delete().eq("id", id);
-    if (!error) onExpenseDeleted();
+export const ExpenseList = ({ expenses, onExpenseDeleted }: { expenses: any[], onExpenseDeleted: () => void }) => {
+  const deleteExpense = (id: string) => {
+    const allExpenses = JSON.parse(localStorage.getItem("pocket_expenses") || "[]");
+    const filtered = allExpenses.filter((e: any) => e.id !== id);
+    localStorage.setItem("pocket_expenses", JSON.stringify(filtered));
+    onExpenseDeleted();
   };
 
   return (

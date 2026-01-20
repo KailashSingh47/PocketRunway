@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
 import { PlusCircle } from "lucide-react";
 
 const CATEGORIES = ["Food", "Transport", "Entertainment", "Bills", "Shopping", "Other"];
@@ -12,29 +11,29 @@ export const ExpenseForm = ({ onExpenseAdded }: { onExpenseAdded: () => void }) 
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const supabase = createClient();
     
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      setLoading(false);
-      return;
-    }
+    const user = JSON.parse(localStorage.getItem("pocket_user") || "null");
+    if (!user) return;
 
-    const { error } = await supabase.from("expenses").insert({
+    const newExpense = {
+      id: Date.now().toString(),
       user_id: user.id,
       amount: parseFloat(amount),
       category,
       description,
-    });
+      date: new Date().toISOString(),
+    };
 
-    if (!error) {
-      setAmount("");
-      setDescription("");
-      onExpenseAdded();
-    }
+    const allExpenses = JSON.parse(localStorage.getItem("pocket_expenses") || "[]");
+    allExpenses.push(newExpense);
+    localStorage.setItem("pocket_expenses", JSON.stringify(allExpenses));
+
+    setAmount("");
+    setDescription("");
+    onExpenseAdded();
     setLoading(false);
   };
 

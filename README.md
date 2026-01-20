@@ -36,35 +36,6 @@
 
 ---
 
-## 🚀 Getting Started
-
-### Prerequisites
-- Node.js 18+ 
-- A Supabase Project
-
-### Installation
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/KailashSingh47/PocketRunway.git
-   cd PocketRunway
-   ```
-
-2. **Install dependencies**
-   ```bash
-   pnpm install
-   ```
-
-3. **Environment Setup**
-   Create a `.env.local` file and add your Supabase credentials:
-   ```env
-   NEXT_PUBLIC_SUPABASE_URL=your_url
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_key
-   ```
-
-4. **Run Development Server**
-   ```bash
-   pnpm dev
-   ```
 
 ---
 
