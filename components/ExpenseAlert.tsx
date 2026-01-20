@@ -1,17 +1,19 @@
 "use client";
 
+import { useState } from "react";
 import { Tables } from "@/database.types";
-import { AlertTriangle, TrendingUp, Info, Download } from "lucide-react";
+import { AlertTriangle, TrendingUp, Info, Download, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
 type Expense = Tables<"expenses">;
 
-const WEEKLY_THRESHOLD = 5000; // ₹5,000 per week
-const PRE_WARNING_THRESHOLD = 4000; // ₹4,000 (80% of budget)
+const WEEKLY_THRESHOLD = 2500; // Updated to ₹2,500 per user request
+const PRE_WARNING_THRESHOLD = 2000; // Warning at 80%
 
 export const ExpenseAlert = ({ expenses }: { expenses: Expense[] }) => {
+  const [isVisible, setIsVisible] = useState(true);
   const now = new Date();
   
   // Calculate start of current week (Sunday)
@@ -19,14 +21,17 @@ export const ExpenseAlert = ({ expenses }: { expenses: Expense[] }) => {
   startOfWeek.setDate(now.getDate() - now.getDay());
   startOfWeek.setHours(0, 0, 0, 0);
 
+  // Filter expenses for the current week AND current month
   const weeklyExpenses = expenses.filter((e) => {
     const d = new Date(e.date);
-    return d >= startOfWeek;
+    return d >= startOfWeek && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
   });
 
   const weeklyTotal = weeklyExpenses.reduce((acc, curr) => acc + curr.amount, 0);
   const isOverBudget = weeklyTotal > WEEKLY_THRESHOLD;
   const isPreWarning = weeklyTotal >= PRE_WARNING_THRESHOLD && weeklyTotal <= WEEKLY_THRESHOLD;
+
+  if (!isVisible || (!isOverBudget && !isPreWarning)) return null;
 
   const downloadPDF = () => {
     const doc = new jsPDF();
@@ -56,10 +61,8 @@ export const ExpenseAlert = ({ expenses }: { expenses: Expense[] }) => {
       headStyles: { fillColor: [255, 113, 206] },
     });
 
-    doc.save(`PocketRunway_Report_${new Date().toISOString().split('T')[0]}.pdf`);
+    doc.save(`PocketRunway_Weekly_Report_${new Date().toISOString().split('T')[0]}.pdf`);
   };
-
-  if (!isOverBudget && !isPreWarning) return null;
 
   return (
     <AnimatePresence>
@@ -67,9 +70,17 @@ export const ExpenseAlert = ({ expenses }: { expenses: Expense[] }) => {
         initial={{ height: 0, opacity: 0, y: -20 }}
         animate={{ height: "auto", opacity: 1, y: 0 }}
         exit={{ height: 0, opacity: 0, y: -20 }}
-        className="mb-8 overflow-hidden"
+        className="mb-8 overflow-hidden relative"
       >
         <div className={`bg-vapor-dark/80 border-2 ${isOverBudget ? 'border-vapor-pink shadow-[0_0_20px_rgba(255,113,206,0.3)]' : 'border-vapor-yellow shadow-[0_0_20px_rgba(255,251,150,0.2)]'} p-4 md:p-6 relative group overflow-hidden`}>
+          {/* Close Button */}
+          <button 
+            onClick={() => setIsVisible(false)}
+            className="absolute top-2 right-2 z-20 text-white/50 hover:text-white transition-colors"
+          >
+            <X size={18} />
+          </button>
+
           <div className={`absolute inset-0 ${isOverBudget ? 'bg-vapor-pink/5' : 'bg-vapor-yellow/5'} animate-pulse pointer-events-none`} />
           
           <div className="relative z-10 flex flex-col md:flex-row items-center gap-4 md:gap-6">
