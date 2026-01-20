@@ -42,6 +42,7 @@
 ## 👤 Lead Developer
 **Kailash Singh**  
 *Full Stack Developer & Aesthetic Architect*
+# 🤖 *Submited to hackathon*
 
 [![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/KailashSingh47)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/kailash-singh-47sk/)
