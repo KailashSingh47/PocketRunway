@@ -1,7 +1,9 @@
 "use client";
 
 import { Tables } from "@/database.types";
-import { Trash2 } from "lucide-react";
+import { Trash2, Download } from "lucide-react";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 type Expense = Tables<"expenses">;
 
@@ -14,6 +16,58 @@ export const ExpenseStats = ({
 }) => {
   const total = expenses.reduce((acc, curr) => acc + curr.amount, 0);
   
+  const downloadPDF = () => {
+    const doc = new jsPDF();
+    
+    // Vaporwave Colors
+    const PINK = [255, 113, 206];
+    const BLUE = [1, 205, 254];
+    const DARK = [36, 23, 52];
+
+    // Header
+    doc.setFillColor(DARK[0], DARK[1], DARK[2]);
+    doc.rect(0, 0, 210, 40, 'F');
+    
+    doc.setFontSize(24);
+    doc.setTextColor(PINK[0], PINK[1], PINK[2]);
+    doc.text("POCKET_RUNWAY", 14, 25);
+    
+    doc.setFontSize(10);
+    doc.setTextColor(BLUE[0], BLUE[1], BLUE[2]);
+    doc.text("AESTHETIC_FINANCE_PROTOCOL // EXPENSE_REPORT", 14, 32);
+
+    // Summary Info
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(12);
+    doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 50);
+    doc.text(`Total Expenses: Rs. ${total.toLocaleString('en-IN')}`, 14, 58);
+    doc.text(`Transaction Count: ${expenses.length}`, 14, 66);
+
+    // Table
+    const tableData = expenses.map(e => [
+      new Date(e.date).toLocaleDateString(),
+      e.category.toUpperCase(),
+      e.description || "---",
+      `Rs. ${e.amount.toLocaleString('en-IN')}`
+    ]);
+
+    autoTable(doc, {
+      startY: 75,
+      head: [['DATE', 'CATEGORY', 'DESCRIPTION', 'AMOUNT']],
+      body: tableData,
+      headStyles: { 
+        fillColor: PINK, 
+        textColor: [255, 255, 255],
+        fontStyle: 'bold'
+      },
+      alternateRowStyles: { fillColor: [245, 245, 255] },
+      margin: { top: 75 },
+      styles: { font: 'helvetica', fontSize: 9 }
+    });
+
+    doc.save(`PocketRunway_Full_Report_${new Date().toISOString().split('T')[0]}.pdf`);
+  };
+
   const categoryTotals = expenses.reduce((acc, curr) => {
     acc[curr.category] = (acc[curr.category] || 0) + curr.amount;
     return acc;
@@ -24,18 +78,28 @@ export const ExpenseStats = ({
       <div className="bg-vapor-dark/60 border-2 border-vapor-green p-4 md:p-6 shadow-[5px_5px_0px_0px_rgba(5,255,161,0.5)] relative group">
         <div className="flex justify-between items-start">
           <h3 className="text-vapor-green font-bold mb-2 italic uppercase tracking-widest text-xs md:text-sm">Total Spent</h3>
-          {expenses.length > 0 && (
-            <button 
-              onClick={() => {
-                if(confirm("Are you sure you want to clear all expenses? This cannot be undone.")) {
-                  onClearAll();
-                }
-              }}
-              className="text-[10px] text-vapor-pink border border-vapor-pink px-2 py-1 hover:bg-vapor-pink hover:text-vapor-dark transition-all flex items-center gap-1 font-mono"
-            >
-              <Trash2 size={10} /> CLEAR_ALL
-            </button>
-          )}
+          <div className="flex gap-2">
+            {expenses.length > 0 && (
+              <>
+                <button 
+                  onClick={downloadPDF}
+                  className="text-[10px] text-vapor-blue border border-vapor-blue px-2 py-1 hover:bg-vapor-blue hover:text-vapor-dark transition-all flex items-center gap-1 font-mono"
+                >
+                  <Download size={10} /> EXPORT_PDF
+                </button>
+                <button 
+                  onClick={() => {
+                    if(confirm("Are you sure you want to clear all expenses? This cannot be undone.")) {
+                      onClearAll();
+                    }
+                  }}
+                  className="text-[10px] text-vapor-pink border border-vapor-pink px-2 py-1 hover:bg-vapor-pink hover:text-vapor-dark transition-all flex items-center gap-1 font-mono"
+                >
+                  <Trash2 size={10} /> CLEAR_ALL
+                </button>
+              </>
+            )}
+          </div>
         </div>
         <p className="text-3xl md:text-5xl font-black text-white drop-shadow-[0_2px_2px_rgba(5,255,161,0.5)]">
           ₹{total.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
