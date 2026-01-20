@@ -20,9 +20,13 @@
 - **🌈 Vaporwave UI**: Dynamic gradients, scanlines, and retro-grid backgrounds.
 - **📊 Visual Analytics**: Interactive Bar and Pie charts for category-wise spending breakdown.
 - **⚡ Quick Add**: One-tap logging for common expenses (Coffee, Transport, etc.).
-- **🚨 Smart Budget Alerts**: Visual warnings when approaching or exceeding weekly limits.
+- **🚨 Smart Budget Alerts**: 
+  - **Weekly Limit**: Warning at ₹2,000, Alert at ₹2,500.
+  - **Critical Alert**: Special warning at ₹5,000 (equivalent to 2 weeks of budget).
+  - **Dismissable**: All alerts can be closed by the user.
 - **📄 PDF Export**: Generate aesthetic financial reports with a single click.
-- **🔐 Secure Auth**: Full authentication flow powered by Supabase.
+- **🔐 Secure Auth**: Full authentication flow powered by Supabase (Local Storage fallback).
+- **💡 Wisdom Engine**: Random saving quotes displayed during system initialization (Loading Screen).
 
 ---
 
@@ -36,13 +40,9 @@
 
 ---
 
-
----
-
 ## 👤 Lead Developer
 **Kailash Singh**  
 *Full Stack Developer & Aesthetic Architect*
-# 🤖 *Submited to hackathon*
 
 [![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/KailashSingh47)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/kailash-singh-47sk/)
@@ -51,11 +51,11 @@
 ---
 
 ## 📜 License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License.
 
 ---
 
 <p align="center">
   <img src="https://img.shields.io/badge/SYSTEM_STATUS-AESTHETIC-05ffa1?style=flat-square" />
-  <img src="https://img.shields.io/badge/VERSION-1.0.47-01cdfe?style=flat-square" />
+  <img src="https://img.shields.io/badge/VERSION-1.1.0-01cdfe?style=flat-square" />
 </p>
