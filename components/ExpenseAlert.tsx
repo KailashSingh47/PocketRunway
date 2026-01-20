@@ -9,8 +9,9 @@ import autoTable from "jspdf-autotable";
 
 type Expense = Tables<"expenses">;
 
-const WEEKLY_THRESHOLD = 2500; // Updated to ₹2,500 per user request
-const PRE_WARNING_THRESHOLD = 2000; // Warning at 80%
+const WEEKLY_THRESHOLD = 2500; 
+const TWO_WEEK_THRESHOLD = 5000; // New threshold for 2-week alert
+const PRE_WARNING_THRESHOLD = 2000; 
 
 export const ExpenseAlert = ({ expenses }: { expenses: Expense[] }) => {
   const [isVisible, setIsVisible] = useState(true);
@@ -21,17 +22,17 @@ export const ExpenseAlert = ({ expenses }: { expenses: Expense[] }) => {
   startOfWeek.setDate(now.getDate() - now.getDay());
   startOfWeek.setHours(0, 0, 0, 0);
 
-  // Filter expenses for the current week AND current month
   const weeklyExpenses = expenses.filter((e) => {
     const d = new Date(e.date);
     return d >= startOfWeek && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
   });
 
   const weeklyTotal = weeklyExpenses.reduce((acc, curr) => acc + curr.amount, 0);
-  const isOverBudget = weeklyTotal > WEEKLY_THRESHOLD;
+  const isCritical = weeklyTotal >= TWO_WEEK_THRESHOLD;
+  const isOverBudget = weeklyTotal > WEEKLY_THRESHOLD && !isCritical;
   const isPreWarning = weeklyTotal >= PRE_WARNING_THRESHOLD && weeklyTotal <= WEEKLY_THRESHOLD;
 
-  if (!isVisible || (!isOverBudget && !isPreWarning)) return null;
+  if (!isVisible || (!isOverBudget && !isPreWarning && !isCritical)) return null;
 
   const downloadPDF = () => {
     const doc = new jsPDF();
@@ -89,12 +90,14 @@ export const ExpenseAlert = ({ expenses }: { expenses: Expense[] }) => {
             </div>
             
             <div className="flex-1 text-center md:text-left">
-              <h3 className={`${isOverBudget ? 'text-vapor-pink' : 'text-vapor-yellow'} font-black italic text-xl md:text-2xl uppercase tracking-tighter mb-1`}>
-                {isOverBudget ? 'WEEKLY_LIMIT_EXCEEDED' : 'PRE_WARNING_ALERT'}
+              <h3 className={`${isCritical ? 'text-vapor-pink' : isOverBudget ? 'text-vapor-pink' : 'text-vapor-yellow'} font-black italic text-xl md:text-2xl uppercase tracking-tighter mb-1`}>
+                {isCritical ? 'CRITICAL_SPENDING_DETECTED' : isOverBudget ? 'WEEKLY_LIMIT_EXCEEDED' : 'PRE_WARNING_ALERT'}
               </h3>
               <p className="text-white/80 font-mono text-xs md:text-sm uppercase">
-                Weekly budget: ₹{WEEKLY_THRESHOLD.toLocaleString('en-IN')} | 
-                Spent: <span className={`font-bold ${isOverBudget ? 'text-vapor-pink' : 'text-vapor-yellow'}`}>₹{weeklyTotal.toLocaleString('en-IN')}</span>
+                {isCritical 
+                  ? `WARNING: You have spent ₹${weeklyTotal.toLocaleString('en-IN')}. This is equivalent to TWO WEEKS of your budget!` 
+                  : `Weekly budget: ₹${WEEKLY_THRESHOLD.toLocaleString('en-IN')} | Spent: ₹${weeklyTotal.toLocaleString('en-IN')}`
+                }
               </p>
             </div>
 

@@ -2,8 +2,25 @@
 
 import { motion } from "framer-motion";
 import { ShuffleText } from "./ShuffleText";
+import { useState, useEffect } from "react";
+
+const SAVING_QUOTES = [
+  "A penny saved is a penny earned.",
+  "Don't save what is left after spending; spend what is left after saving.",
+  "The art is not in making money, but in keeping it.",
+  "Beware of little expenses; a small leak will sink a great ship.",
+  "He who buys what he does not need, steals from himself.",
+  "Aesthetic wealth starts with digital discipline.",
+  "Your future self will thank you for the neon you didn't buy today.",
+];
 
 export const LoadingScreen = ({ message = "INITIALIZING_SYSTEM" }: { message?: string }) => {
+  const [quote, setQuote] = useState("");
+
+  useEffect(() => {
+    setQuote(SAVING_QUOTES[Math.floor(Math.random() * SAVING_QUOTES.length)]);
+  }, []);
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -23,9 +40,12 @@ export const LoadingScreen = ({ message = "INITIALIZING_SYSTEM" }: { message?: s
         </div>
       </div>
       
-      <div className="mt-8 text-center">
-        <p className="text-vapor-pink font-mono text-xl tracking-[0.2em] uppercase">
+      <div className="mt-8 text-center max-w-md px-6">
+        <p className="text-vapor-pink font-mono text-xl tracking-[0.2em] uppercase mb-2">
           <ShuffleText text={message} />
+        </p>
+        <p className="text-vapor-blue font-mono text-[10px] italic uppercase tracking-widest opacity-80 animate-pulse">
+          "{quote}"
         </p>
         <motion.div 
           initial={{ width: 0 }}
