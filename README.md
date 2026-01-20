@@ -1,36 +1,89 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🌴 PocketRunway 🌴
+### *Aesthetic Expense Tracking Protocol*
 
-## Getting Started
+![Vaporwave Banner](https://img.shields.io/badge/AESTHETIC-FINANCE-ff71ce?style=for-the-badge&logo=visual-studio-code&logoColor=white)
+![Next.js](https://img.shields.io/badge/Next.js_15-000000?style=for-the-badge&logo=next.js&logoColor=white)
+![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🌌 Overview
+**PocketRunway** is a high-fidelity, Vaporwave-inspired expense management dashboard. It combines retro-futuristic aesthetics with modern financial tracking capabilities. Log your spending, visualize your habits through neon-drenched charts, and manage your budget within a "Vapourlike" digital environment.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+> *"Track your spending. Stay aesthetic."*
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## ✨ Key Features
+- **💎 Monthly Expense Management**: Log, categorize, and track spending with ease.
+- **🌈 Vaporwave UI**: Dynamic gradients, scanlines, and retro-grid backgrounds.
+- **📊 Visual Analytics**: Interactive Bar and Pie charts for category-wise spending breakdown.
+- **⚡ Quick Add**: One-tap logging for common expenses (Coffee, Transport, etc.).
+- **🚨 Smart Budget Alerts**: Visual warnings when approaching or exceeding weekly limits.
+- **📄 PDF Export**: Generate aesthetic financial reports with a single click.
+- **🔐 Secure Auth**: Full authentication flow powered by Supabase.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 🛠️ Tech Stack
+- **Framework**: [Next.js 15](https://nextjs.org/) (App Router)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **Database & Auth**: [Supabase](https://supabase.com/)
+- **Animations**: [Framer Motion](https://www.framer.com/motion/)
+- **Charts**: [Recharts](https://recharts.org/)
+- **PDF Generation**: [jsPDF](https://parall.ax/products/jspdf)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🚀 Getting Started
 
-## Deploy on Vercel
+### Prerequisites
+- Node.js 18+ 
+- A Supabase Project
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Installation
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/KailashSingh47/PocketRunway.git
+   cd PocketRunway
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+2. **Install dependencies**
+   ```bash
+   pnpm install
+   ```
+
+3. **Environment Setup**
+   Create a `.env.local` file and add your Supabase credentials:
+   ```env
+   NEXT_PUBLIC_SUPABASE_URL=your_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_key
+   ```
+
+4. **Run Development Server**
+   ```bash
+   pnpm dev
+   ```
+
+---
+
+## 👤 Lead Developer
+**Kailash Singh**  
+*Full Stack Developer & Aesthetic Architect*
+
+[![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/KailashSingh47)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/kailash-singh-47sk/)
+[![Email](https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:sathikailashninja@gmail.com)
+
+---
+
+## 📜 License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+<p align="center">
+  <img src="https://img.shields.io/badge/SYSTEM_STATUS-AESTHETIC-05ffa1?style=flat-square" />
+  <img src="https://img.shields.io/badge/VERSION-1.0.47-01cdfe?style=flat-square" />
+</p>
