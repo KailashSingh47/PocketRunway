@@ -1,0 +1,5 @@
+- **Monthly Expense Management Dashboard**: A central interface for users to log, categorize, and track their spending habits on a monthly basis.
+- **Vaporwave Aesthetic UI**: A highly stylized visual experience featuring "Vapourlike" design elements, including dynamic gradient backgrounds, shuffle-effect typography, and rotating text components.
+- **Animated Authentication Transitions**: Secure signup and login workflows featuring custom loading screens that appear before and after authentication to ensure a seamless visual flow.
+- **Interactive Contact & Social Hub**: A dedicated section containing responsive buttons and links to the developer's GitHub, LinkedIn, and professional email.
+- **Lead Developer Attribution**: A prominent credit section at the bottom of the application identifying "Kailash Singh" as the Lead Developer.
